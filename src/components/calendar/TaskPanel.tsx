@@ -3,55 +3,26 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Clock, Calendar } from 'lucide-react';
+import { Plus, Clock, Calendar, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-
-interface Task {
-  id: string;
-  title: string;
-  priority: 'high' | 'medium' | 'low';
-  completed: boolean;
-  dueDate?: Date;
-  color: string;
-}
+import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { useDragDrop } from './DragDropProvider';
 
 interface TaskPanelProps {
   selectedDate: Date | null;
   onTaskAdd: () => void;
+  onTaskClick?: (task: any) => void;
 }
 
-export function TaskPanel({ selectedDate, onTaskAdd }: TaskPanelProps) {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'Review project proposal',
-      priority: 'high',
-      completed: false,
-      dueDate: new Date(),
-      color: 'bg-red-500'
-    },
-    {
-      id: '2',
-      title: 'Update team documentation',
-      priority: 'medium',
-      completed: true,
-      dueDate: new Date(),
-      color: 'bg-blue-500'
-    },
-    {
-      id: '3',
-      title: 'Schedule client follow-up',
-      priority: 'low',
-      completed: false,
-      color: 'bg-green-500'
-    }
-  ]);
+export function TaskPanel({ selectedDate, onTaskAdd, onTaskClick }: TaskPanelProps) {
+  const { tasks, updateTask } = useDragDrop();
 
   const toggleTask = (id: string) => {
-    setTasks(prev => prev.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
-    ));
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+      updateTask(id, { completed: !task.completed });
+    }
   };
 
   const getPriorityColor = (priority: string) => {
@@ -82,55 +53,92 @@ export function TaskPanel({ selectedDate, onTaskAdd }: TaskPanelProps) {
         </div>
       )}
 
-      <div className="space-y-3">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            className={cn(
-              "p-3 rounded-lg border transition-all hover:shadow-sm",
-              task.completed 
-                ? "bg-muted/50 border-border/40" 
-                : "bg-background border-border/60"
-            )}
-          >
-            <div className="flex items-start gap-3">
-              <Checkbox
-                checked={task.completed}
-                onCheckedChange={() => toggleTask(task.id)}
-                className="mt-1"
-              />
-              
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={cn("w-2 h-2 rounded-full", task.color)} />
-                  <p className={cn(
-                    "text-sm font-medium",
-                    task.completed && "line-through text-muted-foreground"
-                  )}>
-                    {task.title}
-                  </p>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <Badge 
-                    variant="secondary" 
-                    className={cn("text-xs", getPriorityColor(task.priority))}
+      <Droppable droppableId="task-panel">
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-3">
+            {tasks.map((task, index) => (
+              <Draggable key={task.id} draggableId={task.id} index={index}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    className={cn(
+                      "p-3 rounded-lg border transition-all hover:shadow-sm cursor-pointer",
+                      task.completed 
+                        ? "bg-muted/50 border-border/40" 
+                        : "bg-background border-border/60",
+                      snapshot.isDragging && "shadow-lg rotate-2"
+                    )}
+                    onClick={() => onTaskClick?.(task)}
                   >
-                    {task.priority}
-                  </Badge>
-                  
-                  {task.dueDate && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {format(task.dueDate, 'MMM d')}
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        checked={task.completed}
+                        onCheckedChange={(e) => {
+                          e.stopPropagation();
+                          toggleTask(task.id);
+                        }}
+                        className="mt-1"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className={cn("w-2 h-2 rounded-full", task.color)} />
+                          <p className={cn(
+                            "text-sm font-medium",
+                            task.completed && "line-through text-muted-foreground"
+                          )}>
+                            {task.title}
+                          </p>
+                          {task.description && (
+                            <FileText className="h-3 w-3 text-muted-foreground" />
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge 
+                            variant="secondary" 
+                            className={cn("text-xs", getPriorityColor(task.priority))}
+                          >
+                            {task.priority}
+                          </Badge>
+                          
+                          {task.dueDate && (
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" />
+                              {format(task.dueDate, 'MMM d')}
+                            </div>
+                          )}
+
+                          {task.tags?.slice(0, 2).map((tag, tagIndex) => (
+                            <Badge key={tagIndex} variant="outline" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {task.tags && task.tags.length > 2 && (
+                            <span className="text-xs text-muted-foreground">
+                              +{task.tags.length - 2}
+                            </span>
+                          )}
+                        </div>
+
+                        {task.subtasks && task.subtasks.length > 0 && (
+                          <div className="mt-2 text-xs text-muted-foreground">
+                            {task.subtasks.filter(s => s.completed).length}/{task.subtasks.length} subtasks
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
           </div>
-        ))}
-      </div>
+        )}
+      </Droppable>
 
       <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
         <h4 className="font-medium text-sm mb-2">Today's Progress</h4>
@@ -138,7 +146,7 @@ export function TaskPanel({ selectedDate, onTaskAdd }: TaskPanelProps) {
           <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
-              style={{ width: `${(tasks.filter(t => t.completed).length / tasks.length) * 100}%` }}
+              style={{ width: `${tasks.length > 0 ? (tasks.filter(t => t.completed).length / tasks.length) * 100 : 0}%` }}
             />
           </div>
           <span className="text-xs text-muted-foreground">

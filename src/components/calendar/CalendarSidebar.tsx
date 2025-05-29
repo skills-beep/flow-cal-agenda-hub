@@ -1,8 +1,10 @@
 
+
 import { Calendar, List, Settings, Sun, Moon, Layout } from 'lucide-react';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useTheme } from './ThemeProvider';
+import { useState } from 'react';
 
 interface CalendarSidebarProps {
   currentView: 'month' | 'week' | 'day';
@@ -26,6 +28,14 @@ const viewItems = [
 
 export function CalendarSidebar({ currentView, onViewChange, isOpen, onToggle }: CalendarSidebarProps) {
   const { theme, toggleTheme } = useTheme();
+  const [activeNavItem, setActiveNavItem] = useState('calendar');
+
+  const handleNavItemClick = (key: string) => {
+    setActiveNavItem(key);
+    console.log(`Navigating to: ${key}`);
+    // Here you could add actual navigation logic or emit events
+    // For now, we'll just update the active state and log
+  };
 
   return (
     <Sidebar className="border-r border-border/40">
@@ -43,7 +53,10 @@ export function CalendarSidebar({ currentView, onViewChange, isOpen, onToggle }:
             <SidebarMenu>
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.key}>
-                  <SidebarMenuButton className="w-full">
+                  <SidebarMenuButton 
+                    className={`w-full ${activeNavItem === item.key ? 'bg-accent text-accent-foreground' : ''}`}
+                    onClick={() => handleNavItemClick(item.key)}
+                  >
                     <item.icon className="h-4 w-4" />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
@@ -102,3 +115,4 @@ export function CalendarSidebar({ currentView, onViewChange, isOpen, onToggle }:
     </Sidebar>
   );
 }
+

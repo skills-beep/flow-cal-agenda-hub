@@ -75,10 +75,7 @@ export function TaskPanel({ selectedDate, onTaskAdd, onTaskClick }: TaskPanelPro
                     <div className="flex items-start gap-3">
                       <Checkbox
                         checked={task.completed}
-                        onCheckedChange={(e) => {
-                          e.stopPropagation();
-                          toggleTask(task.id);
-                        }}
+                        onCheckedChange={() => toggleTask(task.id)}
                         className="mt-1"
                         onClick={(e) => e.stopPropagation()}
                       />

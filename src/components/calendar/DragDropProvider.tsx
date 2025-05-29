@@ -2,6 +2,12 @@
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { createContext, useContext, useState, ReactNode } from 'react';
 
+interface Subtask {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
 interface Task {
   id: string;
   title: string;
@@ -13,6 +19,7 @@ interface Task {
   tags?: string[];
   timeSlot?: string;
   duration?: number;
+  subtasks?: Subtask[];
 }
 
 interface DragDropContextType {
@@ -21,7 +28,7 @@ interface DragDropContextType {
   moveTask: (taskId: string, destination: string) => void;
 }
 
-const DragDropContext_Custom = createContext<DragDropContextType | undefined>(undefined);
+const TaskDragDropContext = createContext<DragDropContextType | undefined>(undefined);
 
 interface DragDropProviderProps {
   children: ReactNode;
@@ -37,7 +44,11 @@ export function DragDropProvider({ children }: DragDropProviderProps) {
       dueDate: new Date(),
       color: 'bg-red-500',
       description: 'Need to review the Q4 project proposal and provide feedback.',
-      tags: ['Work', 'Urgent']
+      tags: ['Work', 'Urgent'],
+      subtasks: [
+        { id: 'sub1', title: 'Read proposal document', completed: true },
+        { id: 'sub2', title: 'Schedule team meeting', completed: false }
+      ]
     },
     {
       id: '2',
@@ -47,7 +58,11 @@ export function DragDropProvider({ children }: DragDropProviderProps) {
       dueDate: new Date(),
       color: 'bg-blue-500',
       description: 'Update the team documentation with latest procedures.',
-      tags: ['Work', 'Documentation']
+      tags: ['Work', 'Documentation'],
+      subtasks: [
+        { id: 'sub3', title: 'Review current docs', completed: true },
+        { id: 'sub4', title: 'Add new procedures', completed: true }
+      ]
     },
     {
       id: '3',
@@ -80,16 +95,16 @@ export function DragDropProvider({ children }: DragDropProviderProps) {
   };
 
   return (
-    <DragDropContext_Custom.Provider value={{ tasks, updateTask, moveTask }}>
+    <TaskDragDropContext.Provider value={{ tasks, updateTask, moveTask }}>
       <DragDropContext onDragEnd={onDragEnd}>
         {children}
       </DragDropContext>
-    </DragDropContext_Custom.Provider>
+    </TaskDragDropContext.Provider>
   );
 }
 
 export function useDragDrop() {
-  const context = useContext(DragDropContext_Custom);
+  const context = useContext(TaskDragDropContext);
   if (!context) {
     throw new Error('useDragDrop must be used within DragDropProvider');
   }

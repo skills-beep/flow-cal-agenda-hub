@@ -1,10 +1,21 @@
 
-
-import { Calendar, List, Settings, Sun, Moon, Layout } from 'lucide-react';
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { useTheme } from './ThemeProvider';
 import { useState } from 'react';
+import { Calendar, Clock, List, Menu, X, Home, Users, Settings, Bell } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { 
+  Sidebar, 
+  SidebarContent, 
+  SidebarHeader, 
+  SidebarMenu, 
+  SidebarMenuItem, 
+  SidebarMenuButton,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarFooter
+} from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
+import { DeveloperSection } from './DeveloperSection';
 
 interface CalendarSidebarProps {
   currentView: 'month' | 'week' | 'day';
@@ -14,51 +25,61 @@ interface CalendarSidebarProps {
 }
 
 const navigationItems = [
-  { title: 'Calendar View', icon: Calendar, key: 'calendar' },
-  { title: 'Task List', icon: List, key: 'tasks' },
-  { title: 'Dashboard', icon: Layout, key: 'dashboard' },
-  { title: 'Settings', icon: Settings, key: 'settings' },
+  { id: 'home', label: 'Home', icon: Home },
+  { id: 'calendar', label: 'Calendar', icon: Calendar },
+  { id: 'tasks', label: 'Tasks', icon: List },
+  { id: 'team', label: 'Team', icon: Users },
+  { id: 'notifications', label: 'Notifications', icon: Bell },
+  { id: 'settings', label: 'Settings', icon: Settings },
 ];
 
-const viewItems = [
-  { title: 'Month View', key: 'month' as const },
-  { title: 'Week View', key: 'week' as const },
-  { title: 'Day View', key: 'day' as const },
+const viewOptions = [
+  { value: 'month' as const, label: 'Month View', icon: Calendar },
+  { value: 'week' as const, label: 'Week View', icon: Clock },
+  { value: 'day' as const, label: 'Day View', icon: List },
 ];
 
-export function CalendarSidebar({ currentView, onViewChange, isOpen, onToggle }: CalendarSidebarProps) {
-  const { theme, toggleTheme } = useTheme();
+export const CalendarSidebar = ({ currentView, onViewChange, isOpen, onToggle }: CalendarSidebarProps) => {
   const [activeNavItem, setActiveNavItem] = useState('calendar');
 
-  const handleNavItemClick = (key: string) => {
-    setActiveNavItem(key);
-    console.log(`Navigating to: ${key}`);
-    // Here you could add actual navigation logic or emit events
-    // For now, we'll just update the active state and log
+  const handleNavItemClick = (itemId: string) => {
+    setActiveNavItem(itemId);
+    console.log(`Navigating to: ${itemId}`);
   };
 
   return (
-    <Sidebar className="border-r border-border/40">
-      <SidebarHeader className="border-b border-border/40 p-4">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-6 w-6 text-primary" />
-          <h2 className="text-lg font-semibold">Calendar Pro</h2>
+    <Sidebar className={cn("transition-all duration-300", !isOpen && "w-0")}>
+      <SidebarHeader className="border-b">
+        <div className="flex items-center justify-between p-4">
+          <h2 className="text-lg font-semibold">Calendar App</h2>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onToggle}
+            className="h-8 w-8"
+          >
+            {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
         </div>
       </SidebarHeader>
-      
-      <SidebarContent>
+
+      <SidebarContent className="flex-1 overflow-y-auto">
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.key}>
-                  <SidebarMenuButton 
-                    className={`w-full ${activeNavItem === item.key ? 'bg-accent text-accent-foreground' : ''}`}
-                    onClick={() => handleNavItemClick(item.key)}
+                <SidebarMenuItem key={item.id}>
+                  <SidebarMenuButton
+                    isActive={activeNavItem === item.id}
+                    onClick={() => handleNavItemClick(item.id)}
+                    className={cn(
+                      "w-full justify-start transition-colors",
+                      activeNavItem === item.id && "bg-primary text-primary-foreground"
+                    )}
                   >
                     <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
+                    <span>{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -67,52 +88,32 @@ export function CalendarSidebar({ currentView, onViewChange, isOpen, onToggle }:
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Calendar Views</SidebarGroupLabel>
+          <SidebarGroupLabel>View Options</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {viewItems.map((item) => (
-                <SidebarMenuItem key={item.key}>
-                  <SidebarMenuButton 
-                    onClick={() => onViewChange(item.key)}
-                    className={`w-full ${currentView === item.key ? 'bg-accent text-accent-foreground' : ''}`}
+              {viewOptions.map((option) => (
+                <SidebarMenuItem key={option.value}>
+                  <SidebarMenuButton
+                    isActive={currentView === option.value}
+                    onClick={() => onViewChange(option.value)}
+                    className={cn(
+                      "w-full justify-start transition-colors",
+                      currentView === option.value && "bg-accent text-accent-foreground"
+                    )}
                   >
-                    <span>{item.title}</span>
+                    <option.icon className="h-4 w-4" />
+                    <span>{option.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Quick Stats</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <div className="space-y-3 p-2">
-              <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                <div className="text-sm text-blue-600 dark:text-blue-400">Today's Tasks</div>
-                <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">5</div>
-              </div>
-              <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                <div className="text-sm text-green-600 dark:text-green-400">Upcoming Meetings</div>
-                <div className="text-2xl font-bold text-green-700 dark:text-green-300">3</div>
-              </div>
-            </div>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/40 p-4">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={toggleTheme}
-          className="w-full"
-        >
-          {theme === 'light' ? <Moon className="h-4 w-4 mr-2" /> : <Sun className="h-4 w-4 mr-2" />}
-          {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-        </Button>
+      <SidebarFooter className="border-t">
+        <DeveloperSection />
       </SidebarFooter>
     </Sidebar>
   );
-}
-
+};

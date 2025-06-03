@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { CalendarSidebar } from '@/components/calendar/CalendarSidebar';
@@ -11,6 +10,7 @@ import { TaskDetailsModal } from '@/components/calendar/TaskDetailsModal';
 import { SearchAndFilter } from '@/components/calendar/SearchAndFilter';
 import { ThemeProvider } from '@/components/calendar/ThemeProvider';
 import { DragDropProvider, useDragDrop } from '@/components/calendar/DragDropProvider';
+import { AnimatedBackground } from '@/components/calendar/AnimatedBackground';
 
 const CalendarContent = () => {
   const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month');
@@ -43,7 +43,9 @@ const CalendarContent = () => {
   const availableTags = ['Work', 'Personal', 'Urgent', 'Documentation', 'Client', 'Meeting'];
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
+    <div className="min-h-screen flex w-full bg-background relative">
+      <AnimatedBackground />
+      
       <CalendarSidebar 
         currentView={currentView}
         onViewChange={setCurrentView}
@@ -51,7 +53,7 @@ const CalendarContent = () => {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative z-10">
         <CalendarHeader 
           currentDate={currentDate}
           currentView={currentView}

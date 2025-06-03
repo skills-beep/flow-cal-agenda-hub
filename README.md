@@ -1,73 +1,74 @@
-# Welcome to your Lovable project
+# Flow Cal Agenda Hub
 
-## Project info
+Flow Cal Agenda Hub is a modern, responsive calendar and agenda management tool built with Vite, TypeScript, and Tailwind CSS. It is designed to help users plan, manage, and visualize their schedules efficiently.
 
-**URL**: https://lovable.dev/projects/7817bee3-0cfc-4801-91f2-e853c2390591
+## 🚀 Features
 
-## How can I edit this code?
+- 🗓️ Dynamic calendar and agenda views
+- ⚡ Fast development with Vite
+- 🎨 Styled with Tailwind CSS
+- 📦 Modular and scalable TypeScript codebase
+- 🧱 Component-based architecture
+- 📁 Organized public and source folders
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- [Vite](https://vitejs.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [PostCSS](https://postcss.org/)
+- [ESLint](https://eslint.org/)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7817bee3-0cfc-4801-91f2-e853c2390591) and start prompting.
+## 📂 Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
+flow-cal-agenda-hub/
+├── public/ # Static assets
+├── src/ # Main application code
+├── index.html # Entry HTML file
+├── package.json # Project metadata and scripts
+├── tailwind.config.ts # Tailwind CSS configuration
+├── vite.config.ts # Vite configuration
+└── tsconfig*.json # TypeScript configuration
 
-**Use your preferred IDE**
+bash
+Copy
+Edit
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📦 Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. **Clone the repository:**
 
-Follow these steps:
+```bash
+git clone https://github.com/skills-beep/flow-cal-agenda-hub.git
+cd flow-cal-agenda-hub
+Install dependencies:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+bash
+Copy
+Edit
+npm install
+# or
+bun install
+Run the development server:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+bash
+Copy
+Edit
 npm run dev
-```
+# or
+bun dev
+Build for production:
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7817bee3-0cfc-4801-91f2-e853c2390591) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+bash
+Copy
+Edit
+npm run build
+# or
+bun build
+🧪 Linting & Formatting
+bash
+Copy
+Edit
+npm run lint
+📜 License
+This project is licensed under the MIT License.
